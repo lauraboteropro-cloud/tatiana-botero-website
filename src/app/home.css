@@ -89,7 +89,7 @@ h1, h2, h3 { margin: 0; font-weight: var(--weight-head); }
 .more li { break-inside: avoid; margin-bottom: var(--s-2); padding-left: var(--s-4); position: relative; }
 .more li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 6px; height: 1px; background: var(--purple); }
 
-/* ---------- Selected work: interactive index ---------- */
+/* ---------- Case studies ---------- */
 
 .panel-label { margin: 0; color: var(--purple-deep); font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
 .panel-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr); gap: var(--s-6); align-items: stretch; margin-bottom: var(--s-6); }
