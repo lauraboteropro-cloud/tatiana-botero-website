@@ -1,0 +1,66 @@
+/* About: a personal editorial profile. Warm, short, and different from the case studies. */
+.ab h1, .ab h2 { margin: 0; font-weight: var(--weight-head); text-wrap: balance; }
+.ab p { margin: 0; }
+/* Section-opening label, same hierarchy as the rest of the site */
+.ab-head { color: var(--purple-deep); font-size: clamp(1.125rem, 0.8vw + 0.9rem, 1.5rem); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.ab-small-label { color: var(--ink-3); font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* ---------- Opening (plain paper) ---------- */
+.ab-open { padding-block: clamp(2rem, 5vw, 4.5rem) clamp(3rem, 6vw, 5rem); }
+.ab-open-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-6); }
+.ab-open-copy { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.ab-open h1 { max-width: 14em; margin-top: var(--s-4); font-size: clamp(2.25rem, 3.8vw + 0.75rem, 4.25rem); line-height: 1.04; letter-spacing: -0.045em; }
+.ab-intro { max-width: 30rem; margin-top: var(--s-5) !important; color: var(--ink-2); font-size: clamp(1.125rem, 0.6vw + 1rem, 1.375rem); line-height: 1.5; }
+.ab-open .ab-note { margin-top: var(--s-5); font-size: 1.5rem; }
+.ab-portrait { margin: 0; width: min(78%, 360px); justify-self: center; }
+.ab-portrait img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 24%; border-radius: 28px; box-shadow: 0 0 0 1px var(--line-purple), 0 30px 60px -36px rgb(81 78 216 / 32%); }
+@media (min-width: 860px) {
+  .ab-open-grid { grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr); column-gap: clamp(2.5rem, 7vw, 6rem); align-items: center; }
+  .ab-portrait { width: 100%; max-width: 420px; justify-self: end; }
+}
+
+/* ---------- An unexpected beginning (lined paper) ---------- */
+.ab-kitchen { --paper-cell: 36px; --paper-line: rgb(23 23 23 / 7%); --run-top: 100px; --run-bottom: 100px; padding-block: clamp(4rem, 8vw, 6.5rem); }
+.ab-kitchen h2 { max-width: 14em; margin-top: var(--s-4); font-size: clamp(2rem, 3vw + 1rem, 3.5rem); line-height: 1.06; letter-spacing: -0.04em; }
+.ab-steps { display: flex; flex-wrap: wrap; gap: var(--s-2) 0; margin: var(--s-6) 0 0; padding: 0; list-style: none; }
+.ab-steps li { display: flex; align-items: center; color: var(--ink); font-size: clamp(0.875rem, 0.5vw + 0.75rem, 1.0625rem); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+.ab-steps li:not(:last-child)::after { content: "→"; margin-inline: var(--s-4); color: var(--purple); letter-spacing: 0; }
+.ab-steps li:last-child { color: var(--purple-deep); }
+.ab-ask { max-width: 32rem; margin-top: var(--s-6) !important; color: var(--ink); font-size: clamp(1.25rem, 1.2vw + 1rem, 1.75rem); font-weight: 500; line-height: 1.35; letter-spacing: -0.02em; }
+
+.ab-salt { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--s-5) var(--s-6); margin-top: clamp(2.5rem, 5vw, 4rem); padding-block: var(--s-6); border-block: 1px solid var(--line-purple); }
+.ab-quote { margin-top: var(--s-3) !important; font-size: clamp(2.25rem, 4vw + 1rem, 4.5rem); font-weight: 500; line-height: 1; letter-spacing: -0.05em; }
+.ab-salt-arrow { color: var(--purple); font-size: 2rem; line-height: 1; }
+.ab-salt-real ul { display: grid; margin: var(--s-3) 0 0; padding: 0; list-style: none; }
+.ab-salt-real li { padding-block: 6px; border-bottom: 1px solid var(--line); color: var(--ink); font-size: clamp(1.5rem, 1.6vw + 1rem, 2.25rem); font-weight: 500; letter-spacing: -0.03em; transition: color var(--t-fast) var(--ease), padding-left var(--t-base) var(--ease); }
+.ab-salt-real li:last-child { border-bottom: 0; }
+.ab-salt-real li:hover { color: var(--purple-deep); padding-left: var(--s-3); }
+.ab-verdict { margin-top: clamp(2rem, 4vw, 3rem) !important; color: var(--purple-deep); font-size: clamp(1.5rem, 2.6vw + 0.75rem, 3.25rem); font-weight: 600; line-height: 1.05; letter-spacing: -0.03em; text-transform: uppercase; }
+@media (max-width: 760px) {
+  .ab-salt { grid-template-columns: minmax(0, 1fr); }
+  .ab-salt-arrow { transform: rotate(90deg); justify-self: start; }
+}
+
+/* ---------- A few things about me (plain paper, notes placed on the page) ---------- */
+.ab-few { padding-block: clamp(4rem, 8vw, 6.5rem) clamp(3rem, 6vw, 4.5rem); }
+.ab-fragments { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 3.5rem) var(--s-5); margin-top: var(--s-6); }
+.ab-f p:not(.ab-f-label) { max-width: 30rem; color: var(--ink-2); font-size: 1.125rem; line-height: 1.55; }
+.ab-f-label { display: flex; align-items: baseline; gap: var(--s-3); margin-bottom: var(--s-3) !important; color: var(--ink); font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+.ab-f-label span { color: var(--purple-deep); }
+.ab-f1 { grid-column: 1 / 8; }
+.ab-f1 .ab-f-big { max-width: 36rem; color: var(--ink); font-size: clamp(1.5rem, 1.6vw + 1rem, 2.25rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.03em; }
+.ab-f2 { grid-column: 9 / 13; align-self: end; padding-left: var(--s-4); border-left: 2px solid var(--purple); }
+.ab-f3 { grid-column: 1 / 6; }
+.ab-f4 { grid-column: 7 / 13; }
+@media (max-width: 860px) {
+  .ab-fragments { grid-template-columns: minmax(0, 1fr); }
+  .ab-f1, .ab-f2, .ab-f3, .ab-f4 { grid-column: 1; }
+  .ab-f2 { align-self: start; }
+}
+
+/* ---------- Closing (plain paper) ---------- */
+.ab-close { padding-block: clamp(2rem, 4vw, 3rem) var(--s-7); }
+.ab-close-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-5); padding-top: var(--s-6); border-top: 1px solid var(--line-purple); }
+.ab-close-inner p { max-width: 24em; font-size: clamp(1.375rem, 1.6vw + 1rem, 2rem); font-weight: 500; line-height: 1.15; letter-spacing: -0.03em; }
+.ab-close-inner .button:hover .arrow-icon { transform: translateX(4px); }
+@media (max-width: 520px) { .ab-close-inner .button { width: 100%; justify-content: center; } }

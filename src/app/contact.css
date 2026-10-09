@@ -1,0 +1,16 @@
+/* Standalone contact page: one headline, two actions. */
+.site-footer { margin-top: 0; background: none; }
+.footer-bottom { flex-wrap: wrap; }
+.footer-contact { margin-left: auto; color: var(--purple-deep); font-weight: 500; text-decoration: none; }
+.footer-contact:hover { text-decoration: underline; }
+.contact-main { display: flex; align-items: center; min-height: calc(100svh - 84px - 70px); padding-block: var(--s-6); }
+.contact-inner { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr); gap: var(--s-7) var(--s-7); align-items: end; }
+.contact-main h1 { margin: var(--s-4) 0 0; font-size: clamp(2.25rem, 3.4vw + 1rem, 4.25rem); font-weight: 500; line-height: 1.04; letter-spacing: -0.04em; text-wrap: balance; }
+.contact-main .eyebrow { font-size: clamp(1rem, 0.5vw + 0.9rem, 1.25rem); }
+.contact-actions { display: flex; flex-direction: column; gap: var(--s-3); }
+.contact-link { display: flex; align-items: center; justify-content: space-between; min-height: 64px; padding: 0 var(--s-5); border: 1.5px solid var(--line-purple-strong); border-radius: var(--r-pill); color: var(--purple-deep); font-size: 1.25rem; font-weight: 500; text-decoration: none; transition: background var(--t-base) var(--ease), color var(--t-base) var(--ease), border-color var(--t-base) var(--ease); }
+.contact-link:hover { background: var(--purple-deep); border-color: var(--purple-deep); color: #fff; }
+@media (max-width: 860px) {
+  .contact-main { min-height: calc(100svh - 72px - 90px); align-items: flex-start; padding-top: var(--s-5); }
+  .contact-inner { grid-template-columns: 1fr; gap: var(--s-6); }
+}

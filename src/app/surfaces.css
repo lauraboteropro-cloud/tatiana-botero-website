@@ -1,0 +1,43 @@
+/*
+  Paper backgrounds for the homepage. The page itself is the paper: one base colour, three line patterns.
+    graph   horizontal + vertical lines (hero, case studies)
+    lined   horizontal lines only (a little about me, how I think)
+    plain   no lines (my path, footer)
+  A .paper-run wraps neighbouring sections that share a sheet. Its ::before draws the horizontal rules
+  across the whole run, so graph -> lined keeps the same rules and only the vertical lines fade out.
+  Graph sections draw their vertical lines on ::after. The ends of a run fade into the plain sections.
+  CSS gradients only: no images, no animation.
+*/
+.paper-run { position: relative; isolation: isolate; }
+.paper-run::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image: linear-gradient(to bottom, transparent calc(var(--paper-cell) - 1px), var(--paper-line) calc(var(--paper-cell) - 1px));
+  background-size: 100% var(--paper-cell);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--run-top, 0px), #000 calc(100% - var(--run-bottom, 0px)), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--run-top, 0px), #000 calc(100% - var(--run-bottom, 0px)), transparent);
+}
+.paper-run-a { --run-top: 0px; --run-bottom: var(--paper-fade); }
+.paper-run-b { --run-top: var(--paper-fade); --run-bottom: var(--paper-fade); }
+
+.paper-run-a > .hero, .paper-run-b > .work { position: relative; isolation: isolate; }
+.paper-run-a > .hero::after, .paper-run-b > .work::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image: linear-gradient(to right, var(--paper-line) 1px, transparent 1px);
+  background-size: var(--paper-cell) 100%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--v-top, 0px), #000 calc(100% - var(--v-bottom, 0px)), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--v-top, 0px), #000 calc(100% - var(--v-bottom, 0px)), transparent);
+}
+.paper-run-a > .hero { --v-top: 0px; --v-bottom: var(--paper-fade); }
+.paper-run-b > .work { --v-top: var(--paper-fade); --v-bottom: var(--paper-fade); }
+
+@media (max-width: 720px) {
+  :root { --paper-cell: 32px; --paper-line: rgb(23 23 23 / 5%); --paper-fade: 100px; }
+}
