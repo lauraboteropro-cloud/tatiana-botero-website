@@ -215,7 +215,9 @@
 .index-button[aria-selected="true"] .index-name small { color: rgb(255 255 255 / 78%); }
 .index-button[aria-selected="true"] .index-tag { border-color: rgb(255 255 255 / 60%); color: #fff; }
 .index-panel { grid-column: 2; grid-row: 1; padding: clamp(1.5rem, 3.4vw, 3rem); border-radius: var(--r-lg); animation: panel-in 0.3s var(--ease) both; }
-.index-panel[hidden] { display: none; }
+.index-panels { display: contents; }
+.index-panel:not([data-open]) { display: none; }
+.index-dots { display: none; }
 .index-panel h3 { max-width: 20em; margin: var(--s-3) 0 var(--s-6); font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.035em; text-wrap: balance; }
 @media (max-width: 960px) {
   .index { display: block; }
@@ -227,3 +229,14 @@
   .index-panel { margin-top: var(--s-4); padding: var(--s-5) var(--s-4); }
   .index-light { inset: 0; }
 }
+/* Phones: the four previews sit side by side in a native, snapping, swipeable strip. Vertical scrolling is untouched. */
+@media (max-width: 768px) {
+  .index-panels { position: relative; display: flex; align-items: flex-start; gap: var(--s-3); margin-top: var(--s-4); overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; transition: height 0.25s var(--ease); }
+  .index-panels::-webkit-scrollbar { display: none; }
+  .index-panels .index-panel, .index-panels .index-panel:not([data-open]) { display: block; flex: 0 0 100%; min-width: 0; margin-top: 0; scroll-snap-align: start; animation: none; }
+  .index-dots { display: flex; justify-content: center; gap: 2px; margin-top: var(--s-3); }
+  .index-dots button { position: relative; width: 28px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .index-dots button::before { content: ""; position: absolute; inset: 0; margin: auto; width: 8px; height: 8px; border: 1.5px solid var(--purple); border-radius: 50%; transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease); }
+  .index-dots button[aria-current="true"]::before { background: var(--purple-deep); border-color: var(--purple-deep); transform: scale(1.2); }
+}
+@media (prefers-reduced-motion: reduce) { .index-panels { transition: none; } }

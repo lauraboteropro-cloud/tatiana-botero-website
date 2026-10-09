@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import type { KeyboardEvent } from "react";
 import type { ReactNode } from "react";
 
@@ -108,16 +108,70 @@ const projects: Project[] = [
   },
 ];
 
+/* True on phones and small tablets, where the four previews become a swipe carousel. */
+const PHONE = "(max-width: 768px)";
+function usePhone() {
+  return useSyncExternalStore(
+    (notify) => { const query = window.matchMedia(PHONE); query.addEventListener("change", notify); return () => query.removeEventListener("change", notify); },
+    () => window.matchMedia(PHONE).matches,
+    () => false,
+  );
+}
+
 export function WorkIndex() {
   const [selected, setSelected] = useState(0);
+  const phone = usePhone();
   const uid = useId();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
+  const strip = useRef<HTMLDivElement>(null);
+  const panels = useRef<(HTMLDivElement | null)[]>([]);
+  const moving = useRef(0);
+
+  /* Phone: move the carousel to a project. The scroll position is the source of truth while swiping. */
+  const slideTo = (index: number) => {
+    const el = strip.current;
+    const panel = panels.current[index];
+    if (!el || !panel) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.clearTimeout(moving.current);
+    moving.current = window.setTimeout(() => { moving.current = 0; }, 600);
+    el.scrollTo({ left: panel.offsetLeft, behavior: reduced ? "auto" : "smooth" });
+  };
 
   const choose = (index: number) => {
     setSelected(index);
-    /* On a phone the selector scrolls sideways: keep the chosen project in view. */
     refs.current[index]?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+    if (phone) slideTo(index);
   };
+
+  /* A swipe scrolls the strip itself; the selector and dots follow it. */
+  const onScroll = () => {
+    const el = strip.current;
+    if (!phone || !el || moving.current) return;
+    let nearest = 0;
+    let best = Infinity;
+    panels.current.forEach((panel, i) => {
+      if (!panel) return;
+      const distance = Math.abs(panel.offsetLeft - el.scrollLeft);
+      if (distance < best) { best = distance; nearest = i; }
+    });
+    if (nearest !== selected) {
+      setSelected(nearest);
+      refs.current[nearest]?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+    }
+  };
+
+  /* Phone: the carousel is only as tall as the preview in view, and stays on it if the screen is resized. */
+  useEffect(() => {
+    const el = strip.current;
+    const panel = panels.current[selected];
+    if (!phone || !el || !panel) { if (el) el.style.height = ""; return; }
+    const fit = () => { el.style.height = `${panel.offsetHeight}px`; };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(panel);
+    return () => observer.disconnect();
+  }, [phone, selected]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const step = ({ ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 } as Record<string, number>)[event.key];
@@ -157,23 +211,39 @@ export function WorkIndex() {
           </button>
         ))}
       </div>
-      {projects.map((project, index) => {
-        const open = selected === index;
-        return (
-          <div className="index-panel glass" key={project.id} id={`${uid}-${project.id}`} role="tabpanel" aria-labelledby={`${uid}-tab-${project.id}`} hidden={!open}>
-            <p className="panel-label">{project.label}</p>
-            <h3>{project.title}</h3>
-            <div className="panel-body sc-body">
-              <div className="sc-scene">{open && project.scene}</div>
-              <div className="sc-side">
-                {project.story.map((line) => <p className="sc-story" key={line}>{line}</p>)}
-                <ul className="sc-context" aria-label="Context">{project.context.map((c) => <li key={c}>{c}</li>)}</ul>
-                <Link className="cta-pill" href={project.cta.href}>{project.cta.label} <span aria-hidden="true">→</span></Link>
+      <div className="index-panels" ref={strip} onScroll={onScroll}>
+        {projects.map((project, index) => {
+          const open = selected === index;
+          return (
+            <div
+              className="index-panel glass"
+              key={project.id}
+              ref={(node) => { panels.current[index] = node; }}
+              id={`${uid}-${project.id}`}
+              role="tabpanel"
+              aria-labelledby={`${uid}-tab-${project.id}`}
+              data-open={open ? "" : undefined}
+              inert={!open}
+            >
+              <p className="panel-label">{project.label}</p>
+              <h3>{project.title}</h3>
+              <div className="panel-body sc-body">
+                <div className="sc-scene">{(open || phone) && project.scene}</div>
+                <div className="sc-side">
+                  {project.story.map((line) => <p className="sc-story" key={line}>{line}</p>)}
+                  <ul className="sc-context" aria-label="Context">{project.context.map((c) => <li key={c}>{c}</li>)}</ul>
+                  <Link className="cta-pill" href={project.cta.href}>{project.cta.label} <span aria-hidden="true">→</span></Link>
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
+      <div className="index-dots" role="group" aria-label="Choose a case study">
+        {projects.map((project, index) => (
+          <button key={project.id} type="button" aria-label={project.short} aria-current={selected === index ? "true" : undefined} onClick={() => choose(index)} />
+        ))}
+      </div>
     </div>
   );
 }
