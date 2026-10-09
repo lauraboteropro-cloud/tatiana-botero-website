@@ -15,6 +15,7 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
   const [active, setActive] = useState(0);
   const uid = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [moves, setMoves] = useState(0);
 
   useEffect(() => {
     const index = sections.findIndex((section) => `#${section.id}` === window.location.hash);
@@ -26,8 +27,21 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
   const go = (index: number) => {
     setActive(index);
     window.history.replaceState(null, "", `#${sections[index].id}`);
-    document.getElementById(`${uid}-nav`)?.scrollIntoView({ block: "start" });
+    setMoves((count) => count + 1);
   };
+
+  /* After a chapter changes, bring its beginning into view just below the sticky section navigation.
+     (The navigation itself is sticky, so scrolling to it does nothing; the chapter content is the target.) */
+  useEffect(() => {
+    if (moves === 0) return;
+    const nav = document.getElementById(`${uid}-nav`);
+    const panel = document.getElementById(`${uid}-panel`);
+    if (!nav || !panel) return;
+    const target = Math.max(0, panel.getBoundingClientRect().top + window.scrollY - nav.getBoundingClientRect().bottom);
+    if (window.scrollY <= target + 1) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: target, behavior: reduced ? "auto" : "smooth" });
+  }, [moves, uid]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const step = ({ ArrowRight: 1, ArrowLeft: -1 } as Record<string, number>)[event.key];

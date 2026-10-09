@@ -90,23 +90,8 @@ h1, h2, h3 { margin: 0; font-weight: var(--weight-head); }
 .more li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 6px; height: 1px; background: var(--purple); }
 
 /* ---------- Selected work: interactive index ---------- */
-.index { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(15rem, 0.34fr) minmax(0, 1fr); column-gap: var(--s-6); align-items: start; grid-template-rows: repeat(4, auto) 1fr; }
-.index-light { inset: -4% -2% -4% 20%; }
-.index-item { display: contents; }
-.index-button { grid-column: 1; display: flex; align-items: center; gap: var(--s-4); width: 100%; padding: var(--s-5) 0; border: 0; border-top: 1px solid var(--line); background: transparent; text-align: left; cursor: pointer; }
-.index-item:last-child .index-button { border-bottom: 1px solid var(--line); }
-.index-number { color: var(--ink-3); font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.08em; transition: color var(--t-base) var(--ease); }
-.index-name { flex: 1; color: var(--ink-3); font-size: 1.375rem; font-weight: 500; letter-spacing: -0.025em; transition: color var(--t-base) var(--ease), transform var(--t-base) var(--ease); }
-.index-mark { width: 0; height: 2px; background: var(--purple); transition: width var(--t-base) var(--ease); }
-.index-button:hover .index-name { color: var(--ink); }
-.index-item.is-open .index-name { color: var(--ink); transform: translateX(4px); }
-.index-item.is-open .index-number { color: var(--purple-deep); }
-.index-item.is-open .index-mark { width: 28px; }
 
-.index-panel { grid-column: 2; grid-row: 1 / span 5; padding: clamp(1.5rem, 3.4vw, 3rem); border-radius: var(--r-lg); animation: panel-in 0.5s var(--ease) both; }
-.index-panel[hidden] { display: none; }
 .panel-label { margin: 0; color: var(--purple-deep); font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
-.index-panel h3 { max-width: 20em; margin: var(--s-3) 0 var(--s-6); font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.035em; text-wrap: balance; }
 .panel-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr); gap: var(--s-6); align-items: stretch; margin-bottom: var(--s-6); }
 .panel-copy { min-width: 0; }
 .panel-block { margin-bottom: var(--s-5); }
@@ -187,15 +172,6 @@ h1, h2, h3 { margin: 0; font-weight: var(--weight-head); }
   .flow-link::before { left: 4px; right: auto; top: 0; bottom: 6px; width: 1px; height: auto; }
   .flow-link::after { left: 0; right: auto; top: auto; bottom: 3px; margin-top: 0; border-width: 0 1px 1px 0; }
   .explorer-panel { min-height: 0; }
-  .index { display: block; }
-  .index-item { display: block; border-top: 1px solid var(--line); }
-  .index-item:last-child { border-bottom: 1px solid var(--line); }
-  .index-button, .index-item:last-child .index-button { border: 0; padding-block: var(--s-4); min-height: 64px; }
-  .index-mark { width: 10px; height: 10px; border-right: 1.5px solid var(--purple); border-bottom: 1.5px solid var(--purple); background: transparent; transform: rotate(45deg); transition: transform var(--t-base) var(--ease); }
-  .index-item.is-open .index-mark { width: 10px; transform: rotate(-135deg); }
-  .index-item.is-open .index-name { transform: none; }
-  .index-panel { margin-bottom: var(--s-5); padding: var(--s-5) var(--s-4); }
-  .index-light { inset: 0; }
   .about-preview-inner, .think-inner { grid-template-columns: 1fr; }
 }
 @media (max-width: 720px) {
@@ -213,4 +189,3 @@ h1, h2, h3 { margin: 0; font-weight: var(--weight-head); }
 /* Keep section headings above the soft light behind the explorer and project preview. */
 .section-head { position: relative; z-index: 1; }
 
-.index-tag { padding: 2px 10px; border: 1px solid var(--line-purple-strong); border-radius: var(--r-pill); color: var(--purple-deep); font-size: var(--fs-label); font-weight: 600; white-space: nowrap; }

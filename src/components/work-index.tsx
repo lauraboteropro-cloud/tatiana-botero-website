@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 
 /* Each preview is a teaser: the product question, a little context, and a way into the full case study. */
 
@@ -113,12 +113,18 @@ export function WorkIndex() {
   const uid = useId();
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
+  const choose = (index: number) => {
+    setSelected(index);
+    /* On a phone the selector scrolls sideways: keep the chosen project in view. */
+    refs.current[index]?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+  };
+
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    const step = ({ ArrowDown: 1, ArrowUp: -1 } as Record<string, number>)[event.key];
+    const step = ({ ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 } as Record<string, number>)[event.key];
     if (!step) return;
     event.preventDefault();
     const next = Math.min(projects.length - 1, Math.max(0, selected + step));
-    setSelected(next);
+    choose(next);
     refs.current[next]?.focus();
   };
 
@@ -127,36 +133,42 @@ export function WorkIndex() {
   };
 
   return (
-    <div className="index" data-glow onKeyDown={onKeyDown}>
+    <div className="index" data-glow>
       <div className="lit-light index-light" aria-hidden="true"><span /><span /></div>
+      <div className="index-tabs" role="tablist" aria-label="Case studies" onKeyDown={onKeyDown}>
+        {projects.map((project, index) => (
+          <button
+            key={project.id}
+            type="button"
+            role="tab"
+            ref={(node) => { refs.current[index] = node; }}
+            className="index-button"
+            id={`${uid}-tab-${project.id}`}
+            aria-selected={selected === index}
+            aria-controls={`${uid}-${project.id}`}
+            tabIndex={selected === index ? 0 : -1}
+            onClick={() => choose(index)}
+            onPointerEnter={(event) => hoverSelect(index, event.pointerType)}
+          >
+            <span className="index-number">{String(index + 1).padStart(2, "0")}</span>
+            <span className="index-name">{project.short}<small>{project.when}</small></span>
+            {project.tag && <span className="index-tag">{project.tag}</span>}
+            <span className="index-mark" aria-hidden="true">→</span>
+          </button>
+        ))}
+      </div>
       {projects.map((project, index) => {
         const open = selected === index;
         return (
-          <div className={`index-item${open ? " is-open" : ""}`} key={project.id} style={{ "--row": index + 1 } as CSSProperties}>
-            <button
-              type="button"
-              ref={(node) => { refs.current[index] = node; }}
-              className="index-button"
-              aria-expanded={open}
-              aria-controls={`${uid}-${project.id}`}
-              onClick={() => setSelected(index)}
-              onPointerEnter={(event) => hoverSelect(index, event.pointerType)}
-            >
-              <span className="index-number">{String(index + 1).padStart(2, "0")}</span>
-              <span className="index-name">{project.short}<small>{project.when}</small></span>
-              {project.tag && <span className="index-tag">{project.tag}</span>}
-              <span className="index-mark" aria-hidden="true" />
-            </button>
-            <div className="index-panel glass" id={`${uid}-${project.id}`} role="region" aria-label={project.short} hidden={!open}>
-              <p className="panel-label">{project.label}</p>
-              <h3>{project.title}</h3>
-              <div className="panel-body sc-body">
-                <div className="sc-scene">{open && project.scene}</div>
-                <div className="sc-side">
-                  {project.story.map((line) => <p className="sc-story" key={line}>{line}</p>)}
-                  <ul className="sc-context" aria-label="Context">{project.context.map((c) => <li key={c}>{c}</li>)}</ul>
-                  <Link className="cta-pill" href={project.cta.href}>{project.cta.label} <span aria-hidden="true">→</span></Link>
-                </div>
+          <div className="index-panel glass" key={project.id} id={`${uid}-${project.id}`} role="tabpanel" aria-labelledby={`${uid}-tab-${project.id}`} hidden={!open}>
+            <p className="panel-label">{project.label}</p>
+            <h3>{project.title}</h3>
+            <div className="panel-body sc-body">
+              <div className="sc-scene">{open && project.scene}</div>
+              <div className="sc-side">
+                {project.story.map((line) => <p className="sc-story" key={line}>{line}</p>)}
+                <ul className="sc-context" aria-label="Context">{project.context.map((c) => <li key={c}>{c}</li>)}</ul>
+                <Link className="cta-pill" href={project.cta.href}>{project.cta.label} <span aria-hidden="true">→</span></Link>
               </div>
             </div>
           </div>
