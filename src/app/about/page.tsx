@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Annotation } from "@/components/annotation";
+import { FewThings } from "@/components/few-things";
 import { AboutPortrait } from "@/components/about-portrait";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -60,24 +61,7 @@ export default function AboutPage() {
         <section className="ab-few" aria-labelledby="few-title">
           <div className="page-shell">
             <p className="ab-head" id="few-title">A few things about me</p>
-            <div className="ab-fragments">
-              <div className="ab-f ab-f1" data-reveal>
-                <p className="ab-f-label"><span>01</span>What I’m curious about</p>
-                <p className="ab-f-big">How businesses work. Why people behave the way they do. Where systems break. What happens when one small change affects everything else.</p>
-              </div>
-              <div className="ab-f ab-f2" data-reveal>
-                <p className="ab-f-label"><span>02</span>How I work</p>
-                <p>I usually start with “What’s actually happening?” before asking “What should we build?”</p>
-              </div>
-              <div className="ab-f ab-f3" data-reveal>
-                <p className="ab-f-label"><span>03</span>What I’m doing now</p>
-                <p>I’m working at the intersection of product, operations, technology and GTM, figuring out which real-world problems are worth turning into products.</p>
-              </div>
-              <div className="ab-f ab-f4" data-reveal>
-                <p className="ab-f-label"><span>04</span>Outside product</p>
-                <p>Cooking, discovering new cafés, traveling, birdwatching, trying new food, and apparently analyzing how things work even when I’m supposed to be relaxing.</p>
-              </div>
-            </div>
+            <FewThings />
           </div>
         </section>
 

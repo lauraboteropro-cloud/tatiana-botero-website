@@ -7,7 +7,8 @@ import type { MouseEvent } from "react";
 const links = [
   { label: "Work", href: "/#work", match: "/work" },
   { label: "About", href: "/about", match: "/about" },
-  { label: "Thinking", href: "/writing", match: "/writing" },
+  /* Thinking is hidden for now; the /writing page is intact and can be restored by adding this line back:
+     { label: "Thinking", href: "/writing", match: "/writing" }, */
   { label: "Contact", href: "/contact", match: "/contact" },
 ];
 

@@ -382,3 +382,20 @@
 .es-opportunity { max-width: 40rem; margin-top: var(--s-2) !important; }
 .es-deep > .es-flow + .es-label, .es-deep > .es-opportunity + .es-flow { margin-top: var(--s-4); }
 @media (max-width: 860px) { .es-loss { grid-template-columns: minmax(0, 1fr); } }
+
+/* Phones: forward navigation is primary, going back is quieter */
+@media (max-width: 860px) {
+  .es-pager { flex-direction: column-reverse; align-items: stretch; gap: var(--s-3); }
+  .es-pager > span:empty { display: none; }
+  .es-pager > * { flex: none; width: 100%; justify-content: center; }
+  .es-pager .is-next { min-height: 56px; font-size: 1.0625rem; font-weight: 600; }
+  .es-pager button:not(.is-next) { min-height: 44px; border-color: transparent; color: var(--ink-2); }
+  .es-pager button:not(.is-next):hover { color: var(--purple-deep); }
+}
+/* Phones: tighter vertical rhythm, same type sizes */
+@media (max-width: 560px) {
+  .es-panel { padding-top: var(--s-6); padding-bottom: var(--s-6); }
+  .es-nav { margin-bottom: var(--s-4); }
+  .es-panel > div > h2 + * { margin-top: var(--s-5); }
+  .es .es-sub { margin-top: var(--s-6); padding-top: var(--s-5); }
+}

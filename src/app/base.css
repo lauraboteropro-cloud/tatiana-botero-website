@@ -156,3 +156,6 @@ button { font: inherit; color: inherit; }
   .wordmark { font-size: 0.8125rem; }
   .nav-links a { padding: 8px 4px; font-size: 0.75rem; }
 }
+
+/* Phones: slightly shorter gaps between homepage sections */
+@media (max-width: 520px) { :root { --section: 3.5rem; } }
