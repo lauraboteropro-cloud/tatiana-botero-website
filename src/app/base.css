@@ -149,3 +149,10 @@ button { font: inherit; color: inherit; }
 @media (max-width: 960px) {
   .lit-light { overflow: clip; -webkit-mask-image: radial-gradient(ellipse closest-side, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse closest-side, #000 55%, transparent 100%); }
 }
+
+/* Very small phones (320px): keep the floating navigation inside the screen. */
+@media (max-width: 360px) {
+  .nav-pill { gap: var(--s-1); padding: 0 4px 0 12px; }
+  .wordmark { font-size: 0.8125rem; }
+  .nav-links a { padding: 8px 4px; font-size: 0.75rem; }
+}

@@ -23,7 +23,7 @@ export function WorkSection() {
       <div className="page-shell">
         <header className="section-head" data-reveal>
           <p className="eyebrow">Case studies</p>
-          <h2 id="work-title">Culinary arts taught me to experiment, diagnose, and understand how small changes affect the whole.</h2>
+          <h2 id="work-title">Culinary arts taught me to experiment, diagnose, and improve.</h2>
         </header>
         <div data-reveal><WorkIndex /></div>
       </div>

@@ -240,3 +240,20 @@
   .index-dots button[aria-current="true"]::before { background: var(--purple-deep); border-color: var(--purple-deep); transform: scale(1.2); }
 }
 @media (prefers-reduced-motion: reduce) { .index-panels { transition: none; } }
+
+/* Phones: each preview is exactly one content width. Nothing inside may widen it, and nothing may spill into the next slide or the page. */
+@media (max-width: 768px) {
+  .work { overflow-x: clip; padding-top: clamp(3rem, 10vw, 4rem); }
+  .work .section-head { margin-bottom: var(--s-4); }
+  .work .section-head h2 { max-width: none; margin-top: var(--s-2); font-size: clamp(1.5rem, 6.2vw, 1.875rem); line-height: 1.15; letter-spacing: -0.03em; }
+  .index { min-width: 0; max-width: 100%; }
+  .index-panels { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .index-panels .index-panel, .index-panels .index-panel:not([data-open]) { box-sizing: border-box; width: 100%; max-width: 100%; overflow: hidden; padding: var(--s-5) 20px; }
+  .index-panel :is(img, svg, video, canvas, table) { max-width: 100%; height: auto; }
+  .index-panel .sc-body, .index-panel .sc-scene, .index-panel .sc-side { min-width: 0; max-width: 100%; }
+  .index-panel .sc-scene { padding: var(--s-4); }
+  .index-panel :is(h3, p, li, span, strong) { overflow-wrap: anywhere; }
+  .index-panel h3 { margin-bottom: var(--s-5); font-size: clamp(1.375rem, 5.4vw, 1.75rem); }
+  .index-panel .sc-big { font-size: clamp(1.75rem, 8.5vw, 2.5rem); }
+  .index-dots { max-width: 100%; }
+}
