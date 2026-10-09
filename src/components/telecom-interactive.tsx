@@ -77,42 +77,24 @@ export function DiscoveryEngine() {
 
 /* ---------- 4. Opportunity space ---------- */
 
-const areas = ["Workforce", "Sales performance", "Customer operations", "Quality", "Training", "Employee lifecycle", "Reporting", "Data", "Workflow automation", "AI-assisted operations"];
-const areaQuestions: Record<string, string[]> = {
-  Workforce: ["Where are staffing, performance, scheduling, or employee-lifecycle decisions fragmented?"],
-  Quality: ["How much QA coverage exists today?", "Where is review still manual?", "How quickly can leaders identify performance problems?"],
-  Reporting: ["Where does data come from?", "How much manual consolidation is required?", "How long does it take to understand what is happening?"],
-};
+const areas = ["Customer operations / experience", "Sales performance", "Workforce", "Quality", "Training", "Employee lifecycle", "Reporting", "Data", "Workflow automation", "AI-assisted operations"];
+const value = ["Revenue", "Cost", "Productivity / capacity", "Operational efficiency", "Risk"];
 
 export function OpportunitySpace() {
-  const [selected, setSelected] = useState("Workforce");
   return (
     <div className="tc-opp">
       <div className="tc-opp-field has-grid">
         <p className="tc-opp-label">Areas of investigation <span>Not products</span></p>
         <ul className="tc-opp-chips">
-          {areas.map((area) => {
-            const explorable = area in areaQuestions;
-            return (
-              <li key={area}>
-                {explorable ? (
-                  <button
-                    type="button"
-                    className="tc-area is-explorable"
-                    aria-pressed={selected === area}
-                    onClick={() => setSelected(area)}
-                    onPointerEnter={(event) => { if (mouseOnly(event)) setSelected(area); }}
-                  >{area}</button>
-                ) : <span className="tc-area">{area}</span>}
-              </li>
-            );
-          })}
+          {areas.map((area) => <li key={area}><span className="tc-area">{area}</span></li>)}
         </ul>
+        <span className="tc-opp-down" aria-hidden="true">↓</span>
+        <div className="tc-opp-filter">
+          <p className="tc-opp-filter-title">Business impact</p>
+          <ul aria-label="Where business impact shows up">{value.map((v) => <li key={v}>{v}</li>)}</ul>
+        </div>
       </div>
-      <div className="tc-opp-panel" aria-live="polite" key={selected}>
-        <p className="tc-opp-panel-label">{selected} · questions I’m exploring</p>
-        <ul>{areaQuestions[selected].map((question) => <li key={question}>{question}</li>)}</ul>
-      </div>
+      <p className="tc-opp-line">A problem becomes worth pursuing when solving it creates measurable business value.</p>
     </div>
   );
 }
@@ -274,7 +256,7 @@ const loop: LoopNode[] = [
   { name: "Business impact", active: true },
   { name: "Buyer", active: true },
   { name: "Product thesis", active: true },
-  { name: "Pilot", active: false },
+  { name: "Pilot", active: true },
   { name: "Evidence", active: false },
   { name: "Productize or change direction", active: false },
 ];
@@ -316,8 +298,8 @@ export function LoopMap() {
         <li className="tc-loop-return">↻ Back to market discovery</li>
       </ol>
       <div className="tc-loop-legend">
-        <div><p className="tc-key tc-key-active">Active now</p><ul><li>Market discovery</li><li>Problem validation</li><li>Product strategy</li><li>GTM development</li></ul></div>
-        <div><p className="tc-key tc-key-next">To validate</p><ul><li>Pilot outcomes</li><li>Repeatability</li><li>Willingness to pay</li><li>Productization</li></ul></div>
+        <div><p className="tc-key tc-key-active">Active now</p><ul>{loop.filter((node) => node.active).map((node) => <li key={node.name}>{node.name}</li>)}</ul></div>
+        <div><p className="tc-key tc-key-next">To validate</p><ul>{loop.filter((node) => !node.active).map((node) => <li key={node.name}>{node.name}</li>)}</ul></div>
       </div>
     </div>
   );
@@ -378,7 +360,7 @@ const criteria = [
   { word: "Painful", line: "painful enough to solve,", term: "Pain" },
   { word: "Recurring", line: "recurring enough to standardize,", term: "Repeatability" },
   { word: "Valuable", line: "valuable enough to pay for,", term: "Value" },
-  { word: "Scalable", line: "and common enough to become products?", term: "Market" },
+  { word: "Repeatable", line: "", term: "Market" },
 ];
 
 export function FinalQuestion() {
@@ -387,10 +369,6 @@ export function FinalQuestion() {
 
   return (
     <div className="tc-final" data-active={active ?? undefined}>
-      <p className="tc-final-statement">
-        <span className="tc-final-lead">Which telecom problems are</span>
-        {criteria.map((item, index) => <span key={item.word} className={`tc-final-line${active === index ? " is-on" : ""}`}>{item.line}</span>)}
-      </p>
       <div className="tc-criteria" role="group" aria-label="The four criteria">
         {criteria.map((item, index) => (
           <button

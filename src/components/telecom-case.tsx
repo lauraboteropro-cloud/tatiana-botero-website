@@ -82,7 +82,7 @@ const sections: CaseSection[] = [
     id: "question", label: "Product question", render: () => (
       <div>
         <p className="eyebrow">The product question</p>
-        <h2>Which problems are painful, recurring, valuable, and common enough to become products?</h2>
+        <h2 className="tc-q">Which telecom problems create enough business impact to become a product?</h2>
         <FinalQuestion />
       </div>
     ),

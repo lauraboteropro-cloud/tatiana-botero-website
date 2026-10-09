@@ -243,3 +243,18 @@
   .tc-role { padding: 14px; }
   .tc-shift-side { padding: var(--s-4); }
 }
+
+/* Opportunity: investigation areas, filtered by business impact */
+.tc-opp-field .tc-opp-chips { margin-bottom: 0; }
+.tc-opp-down { display: block; margin: var(--s-4) 0 var(--s-3); color: var(--purple); font-size: 1.25rem; line-height: 1; }
+.tc-opp-filter { max-width: 34rem; margin-inline: auto; padding: var(--s-4) var(--s-5); border-radius: var(--r-md); background: var(--purple-deep); color: #fff; box-shadow: 0 0 0 8px rgb(105 102 245 / 14%); }
+.tc-opp-filter-title { margin: 0 0 var(--s-3); font-size: clamp(1.25rem, 1vw + 1.05rem, 1.625rem); font-weight: 600; letter-spacing: -0.02em; }
+.tc-opp-filter ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tc-opp-filter li { padding: 3px 12px; border: 1px solid rgb(255 255 255 / 55%); border-radius: var(--r-pill); font-size: var(--fs-small); font-weight: 500; }
+.tc-opp-line { max-width: 40rem; margin: var(--s-4) auto 0 !important; color: var(--ink-2); font-size: clamp(1rem, 0.4vw + 0.95rem, 1.1875rem); line-height: 1.45; text-align: center; }
+@media (max-width: 560px) { .tc-opp-field { padding: var(--s-5) var(--s-4); } .tc-opp-filter { padding: var(--s-4); box-shadow: 0 0 0 5px rgb(105 102 245 / 14%); } }
+
+/* Product question: a smaller headline so the question and the four criteria fit together */
+.es-panel > div > h2.tc-q { max-width: 20em; font-size: clamp(2.125rem, 2.6vw + 1.4rem, 3.5rem); line-height: 1.08; letter-spacing: -0.04em; }
+.tc-final { align-items: flex-start; gap: var(--s-5); }
+.tc-opp-field .tc-area { min-height: 36px; padding: 0 14px; font-size: var(--fs-small); }
