@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
-import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 
 export type CaseSection = { id: string; label: string; render: (go: (index: number) => void) => ReactNode };
 
@@ -10,7 +10,6 @@ export type CaseSection = { id: string; label: string; render: (go: (index: numb
   Shared shell for every full case study. Each chapter is one view:
     - vertical movement reads the chapter, horizontal movement changes it (swipe, trackpad, arrows, selector)
     - exactly one chapter per gesture, and the new chapter always opens at its beginning
-    - the site navigation tucks away while reading down and returns on scroll up
   Chapter count comes from the sections passed in, so nothing here assumes eight.
 */
 
@@ -38,7 +37,7 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
   const [swiped, setSwiped] = useState(false);
   const uid = useId();
   const root = useRef<HTMLDivElement>(null);
-  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const dots = useRef<(HTMLButtonElement | null)[]>([]);
   const stepRef = useRef<(by: number) => void>(() => {});
   const lockUntil = useRef(0);
   const last = sections.length - 1;
@@ -62,7 +61,8 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
   const go = (index: number) => {
     const target = Math.min(last, Math.max(0, index));
     if (target === active) return;
-    document.documentElement.dataset.navLock = String(Date.now() + 1000);
+    setSwiped(true);
+    try { sessionStorage.setItem("cs-swiped", "1"); } catch {}
     setDir(target > active ? "next" : "prev");
     setActive(target);
     window.history.replaceState(null, "", `#${sections[target].id}`);
@@ -72,13 +72,12 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
   /* The gesture listeners are attached once, so they call the latest version through this. */
   useEffect(() => { stepRef.current = (by) => go(active + by); });
 
-  /* After a chapter changes, bring its beginning just below the sticky chapter navigation. */
+  /* After a chapter changes, bring its beginning (the progress dots and the chapter title under them) to the top of the screen. */
   useEffect(() => {
     if (moves === 0) return;
     const nav = document.getElementById(`${uid}-nav`);
-    const panel = document.getElementById(`${uid}-panel`);
-    if (!nav || !panel) return;
-    const target = Math.max(0, panel.getBoundingClientRect().top + window.scrollY - nav.getBoundingClientRect().bottom);
+    if (!nav) return;
+    const target = Math.max(0, nav.getBoundingClientRect().top + window.scrollY - 24);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (Math.abs(window.scrollY - target) > 1) window.scrollTo({ top: target, behavior: reduced ? "auto" : "smooth" });
   }, [moves, uid]);
@@ -103,8 +102,6 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
       if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * SWIPE_DOMINANCE) return;
       lockUntil.current = Date.now() + LOCK_MS;
       stepRef.current(dx < 0 ? 1 : -1);
-      setSwiped(true);
-      try { sessionStorage.setItem("cs-swiped", "1"); } catch {}
     };
 
     let sum = 0, quiet = 0;
@@ -129,95 +126,47 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
     };
   }, []);
 
-  /* Site navigation: hides while reading down, returns on scroll up, always visible near the top. */
+  /* A sideways trackpad gesture must not also trigger the browser's own back/forward swipe on this page. */
   useEffect(() => {
     const html = document.documentElement;
-    let lastY = window.scrollY, frame = 0;
-    const set = (hidden: boolean) => { if (hidden) html.dataset.caseNav = "hidden"; else delete html.dataset.caseNav; };
-    const read = () => {
-      frame = 0;
-      const y = window.scrollY;
-      const locked = Date.now() < Number(html.dataset.navLock || 0);
-      if (y < 60) set(false);
-      else if (!locked) {
-        if (y - lastY > 10) set(true);
-        else if (lastY - y > 10) set(false);
-        else return; // too small a movement: keep the current state and the reference point
-      }
-      lastY = y;
-    };
-    const onScroll = () => { if (!frame) frame = requestAnimationFrame(read); };
-    window.addEventListener("scroll", onScroll, { passive: true });
     html.style.overscrollBehaviorX = "none";
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (frame) cancelAnimationFrame(frame);
-      delete html.dataset.caseNav;
-      delete html.dataset.navLock;
-      html.style.overscrollBehaviorX = "";
-    };
+    return () => { html.style.overscrollBehaviorX = ""; };
   }, []);
 
+  /* Dots behave like a row of tabs: arrow keys move between them. */
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const by = ({ ArrowRight: 1, ArrowLeft: -1 } as Record<string, number>)[event.key];
     if (!by) return;
     event.preventDefault();
     const target = Math.min(last, Math.max(0, active + by));
     go(target);
-    tabs.current[target]?.focus();
-  };
-
-  const arrow = (by: 1 | -1) => {
-    const disabled = by === 1 ? active === last : active === 0;
-    const name = sections[active + by]?.label;
-    return (
-      <button type="button" className={`es-arrow ${by === 1 ? "is-next" : "is-prev"}`} onClick={() => go(active + by)} disabled={disabled} aria-label={by === 1 ? `Next chapter${name ? `: ${name}` : ""}` : `Previous chapter${name ? `: ${name}` : ""}`}>
-        <span aria-hidden="true">{by === 1 ? "→" : "←"}</span>
-      </button>
-    );
+    dots.current[target]?.focus();
   };
 
   return (
     <div className={`page-shell es ${className}`.trim()} ref={root}>
-      <div className="es-nav" id={`${uid}-nav`} style={{ "--prog": (active + 1) / sections.length } as CSSProperties}>
-        <div className="es-nav-row">
-          <div className="es-nav-main">
-            <div className="es-tabs" style={{ gridTemplateColumns: `repeat(${sections.length}, minmax(0, 1fr))` }} role="tablist" aria-label="Case study sections" onKeyDown={onKeyDown}>
-              {sections.map((section, index) => (
-                <button
-                  key={section.id}
-                  ref={(node) => { tabs.current[index] = node; }}
-                  id={`${uid}-tab-${section.id}`}
-                  type="button"
-                  role="tab"
-                  aria-selected={active === index}
-                  aria-controls={`${uid}-panel`}
-                  tabIndex={active === index ? 0 : -1}
-                  onClick={() => go(index)}
-                ><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>{section.label}</button>
-              ))}
-            </div>
-            <div className="es-select">
-              <label htmlFor={`${uid}-select`}>Section {active + 1} of {sections.length}</label>
-              <select id={`${uid}-select`} value={active} onChange={(event) => go(Number(event.target.value))}>
-                {sections.map((section, index) => <option key={section.id} value={index}>{String(index + 1).padStart(2, "0")} · {section.label}</option>)}
-              </select>
-            </div>
-          </div>
+      <div className="es-nav" id={`${uid}-nav`}>
+        <div className="es-dots" role="tablist" aria-label="Chapters" onKeyDown={onKeyDown}>
+          {sections.map((section, index) => (
+            <button
+              key={section.id}
+              ref={(node) => { dots.current[index] = node; }}
+              id={`${uid}-tab-${section.id}`}
+              type="button"
+              role="tab"
+              aria-selected={active === index}
+              aria-controls={`${uid}-panel`}
+              aria-current={active === index ? "step" : undefined}
+              tabIndex={active === index ? 0 : -1}
+              aria-label={`Go to chapter ${index + 1}: ${section.label}`}
+              onClick={() => go(index)}
+            />
+          ))}
         </div>
-        <div className="es-cue">
-          <div className="es-cue-top">
-            {arrow(-1)}
-            <p className="es-count" aria-hidden="true">{String(active + 1).padStart(2, "0")} / {String(sections.length).padStart(2, "0")}</p>
-            {arrow(1)}
-          </div>
-          <div className="es-dots" role="group" aria-label="Chapters">
-            {sections.map((section, index) => (
-              <button key={section.id} type="button" onClick={() => go(index)} aria-current={active === index ? "step" : undefined} aria-label={`Go to chapter ${index + 1}: ${section.label}`} />
-            ))}
-          </div>
-          {active === 0 && !swiped && <p className="es-hint">Swipe to explore <span aria-hidden="true">→</span></p>}
-        </div>
+        <p className="es-count" aria-hidden="true">{active + 1} / {sections.length}</p>
+        {active === 0 && !swiped && (
+          <p className="es-hint"><span className="es-hint-m">Swipe to explore →</span><span className="es-hint-d">Swipe or use trackpad →</span></p>
+        )}
       </div>
 
       <p className="sr" aria-live="polite">Section {active + 1} of {sections.length}: {sections[active].label}</p>

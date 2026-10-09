@@ -5,7 +5,7 @@ import { EnterpriseCase } from "@/components/enterprise-case";
 import { MomCase } from "@/components/mom-case";
 import { TempoCase } from "@/components/tempo-case";
 import { TelecomCase } from "@/components/telecom-case";
-import { SiteHeader } from "@/components/site-header";
+import { CaseMenu } from "@/components/case-menu";
 
 const studies = {
   "enterprise-workforce-platform": {
@@ -56,7 +56,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
-      <SiteHeader />
+      <CaseMenu />
       <Case />
       <SiteFooter />
     </>
