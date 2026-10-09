@@ -70,8 +70,8 @@ const sections: CaseSection[] = [
   {
     id: "overview", label: "Overview", render: (go) => (
       <div className="es-overview has-grid">
-        <p className="eyebrow">Side project · 2026</p>
-        <p className="ec-meta">Tempo · AI product exploration</p>
+        <p className="eyebrow">Tempo</p>
+        <p className="ec-meta">Side project · 2026 · AI product exploration</p>
         <h1>What if available time isn’t the same as available capacity?</h1>
         <p className="es-lede">A side project exploring whether AI can help busy professionals turn personal intentions into a realistic weekly plan without treating every empty calendar slot as usable capacity.</p>
         <p className="ec-keywords">{keywords.join(" · ")}</p>

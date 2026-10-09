@@ -18,16 +18,25 @@ const SWIPE_DOMINANCE = 1.6; // horizontal travel must beat vertical travel by t
 const WHEEL_MIN = 70;        // accumulated horizontal wheel delta before a trackpad gesture counts
 const LOCK_MS = 550;         // after a change, ignore further gestures for this long
 
-/* A gesture that starts inside something that scrolls sideways (such as a phone-screen row) belongs to that element. */
-function inSideScroller(target: EventTarget | null, boundary: HTMLElement) {
+/* The nearest element that scrolls sideways under the gesture (such as a phone-screen row), if any. */
+function sideScroller(target: EventTarget | null, boundary: HTMLElement): HTMLElement | "form" | null {
   for (let el = target as HTMLElement | null; el && el !== boundary; el = el.parentElement) {
-    if (el.matches?.("input, select, textarea")) return true;
+    if (el.matches?.("input, select, textarea")) return "form";
     if (el.scrollWidth > el.clientWidth + 1) {
       const overflowX = getComputedStyle(el).overflowX;
-      if (overflowX === "auto" || overflowX === "scroll") return true;
+      if (overflowX === "auto" || overflowX === "scroll") return el;
     }
   }
-  return false;
+  return null;
+}
+
+/* A side scroller owns the gesture while it can still move in that direction; at its edge the gesture changes chapter. */
+function scrollerLeaves(scroller: HTMLElement | "form" | null, towardNext: boolean) {
+  if (!scroller) return true;
+  if (scroller === "form") return false;
+  const atStart = scroller.scrollLeft <= 1;
+  const atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
+  return towardNext ? atEnd : atStart;
 }
 
 export function CaseShell({ sections, next, className = "" }: { sections: CaseSection[]; next: { href: string; label: string }; className?: string }) {
@@ -72,12 +81,12 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
   /* The gesture listeners are attached once, so they call the latest version through this. */
   useEffect(() => { stepRef.current = (by) => go(active + by); });
 
-  /* After a chapter changes, bring its beginning (the progress dots and the chapter title under them) to the top of the screen. */
+  /* After a chapter changes, bring its beginning to the top of the screen. */
   useEffect(() => {
     if (moves === 0) return;
-    const nav = document.getElementById(`${uid}-nav`);
-    if (!nav) return;
-    const target = Math.max(0, nav.getBoundingClientRect().top + window.scrollY - 24);
+    const panel = document.getElementById(`${uid}-panel`);
+    if (!panel) return;
+    const target = Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 12);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (Math.abs(window.scrollY - target) > 1) window.scrollTo({ top: target, behavior: reduced ? "auto" : "smooth" });
   }, [moves, uid]);
@@ -87,17 +96,20 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
     const el = root.current;
     if (!el) return;
 
-    let start: { x: number; y: number; t: number; ok: boolean } | null = null;
+    let start: { x: number; y: number; t: number; edgeNext: boolean; edgePrev: boolean } | null = null;
     const onStart = (event: TouchEvent) => {
       if (event.touches.length !== 1) { start = null; return; }
       const touch = event.touches[0];
-      start = { x: touch.clientX, y: touch.clientY, t: Date.now(), ok: !inSideScroller(event.target, el) };
+      const scroller = sideScroller(event.target, el);
+      start = { x: touch.clientX, y: touch.clientY, t: Date.now(), edgeNext: scrollerLeaves(scroller, true), edgePrev: scrollerLeaves(scroller, false) };
     };
     const onEnd = (event: TouchEvent) => {
-      if (!start || !start.ok) { start = null; return; }
+      if (!start) return;
       const touch = event.changedTouches[0];
       const dx = touch.clientX - start.x, dy = touch.clientY - start.y, elapsed = Date.now() - start.t;
+      const allowed = dx < 0 ? start.edgeNext : start.edgePrev;
       start = null;
+      if (!allowed) return;
       if (Date.now() < lockUntil.current || elapsed > 900) return;
       if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * SWIPE_DOMINANCE) return;
       lockUntil.current = Date.now() + LOCK_MS;
@@ -106,7 +118,7 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
 
     let sum = 0, quiet = 0;
     const onWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) * 1.5 || inSideScroller(event.target, el)) return;
+      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) * 1.5 || !scrollerLeaves(sideScroller(event.target, el), event.deltaX > 0)) return;
       event.preventDefault(); // a sideways gesture here must not also trigger the browser's back/forward swipe
       window.clearTimeout(quiet);
       quiet = window.setTimeout(() => { sum = 0; }, 160);
@@ -145,34 +157,36 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
 
   return (
     <div className={`page-shell es ${className}`.trim()} ref={root}>
-      <div className="es-nav" id={`${uid}-nav`}>
-        <div className="es-dots" role="tablist" aria-label="Chapters" onKeyDown={onKeyDown}>
-          {sections.map((section, index) => (
-            <button
-              key={section.id}
-              ref={(node) => { dots.current[index] = node; }}
-              id={`${uid}-tab-${section.id}`}
-              type="button"
-              role="tab"
-              aria-selected={active === index}
-              aria-controls={`${uid}-panel`}
-              aria-current={active === index ? "step" : undefined}
-              tabIndex={active === index ? 0 : -1}
-              aria-label={`Go to chapter ${index + 1}: ${section.label}`}
-              onClick={() => go(index)}
-            />
-          ))}
-        </div>
-        <p className="es-count" aria-hidden="true">{active + 1} / {sections.length}</p>
-        {active === 0 && !swiped && (
-          <p className="es-hint"><span className="es-hint-m">Swipe to explore →</span><span className="es-hint-d">Swipe or use trackpad →</span></p>
-        )}
-      </div>
-
       <p className="sr" aria-live="polite">Section {active + 1} of {sections.length}: {sections[active].label}</p>
 
       <div className="es-panel" id={`${uid}-panel`} data-dir={dir ?? undefined} role="tabpanel" aria-labelledby={`${uid}-tab-${sections[active].id}`} key={active}>
         {sections[active].render(go)}
+      </div>
+
+      <div className="es-dock" role="group" aria-label="Chapters">
+        {active === 0 && !swiped && (
+          <p className="es-hint"><span className="es-hint-m">Swipe to explore →</span><span className="es-hint-d">Swipe or use trackpad →</span></p>
+        )}
+        <div className="es-dock-pill">
+          <div className="es-dots" role="tablist" aria-label="Chapters" onKeyDown={onKeyDown}>
+            {sections.map((section, index) => (
+              <button
+                key={section.id}
+                ref={(node) => { dots.current[index] = node; }}
+                id={`${uid}-tab-${section.id}`}
+                type="button"
+                role="tab"
+                aria-selected={active === index}
+                aria-controls={`${uid}-panel`}
+                aria-current={active === index ? "step" : undefined}
+                tabIndex={active === index ? 0 : -1}
+                aria-label={`Go to chapter ${index + 1}: ${section.label}`}
+                onClick={() => go(index)}
+              />
+            ))}
+          </div>
+          <p className="es-count" aria-hidden="true">{active + 1} / {sections.length}</p>
+        </div>
       </div>
 
       {active === last && (

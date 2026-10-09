@@ -1,18 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 
-const links = [
-  { label: "Tatiana Botero", note: "Home", href: "/" },
-  { label: "Work", href: "/#work" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+const projects = [
+  { label: "Enterprise Platform", href: "/work/enterprise-workforce-platform" },
+  { label: "MOM Seguros", href: "/work/mom-seguros" },
+  { label: "Stealth Telecom", href: "/work/stealth-telecom" },
+  { label: "Tempo", href: "/work/tempo-ai-life-planner" },
 ];
 
-/* The only site navigation on a full case-study page: one quiet button that opens a short menu. */
+/* The only site navigation on a full case-study page: one quiet button that opens a short menu.
+   Work expands in place so another project is one tap away. */
 export function CaseMenu() {
   const [open, setOpen] = useState(false);
+  const [workOpen, setWorkOpen] = useState(true);
+  const pathname = usePathname();
   const uid = useId();
   const root = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
@@ -26,6 +30,8 @@ export function CaseMenu() {
     return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onPointer); };
   }, [open]);
 
+  const close = () => setOpen(false);
+
   return (
     <header className="case-top">
       <div className="case-menu" ref={root}>
@@ -33,11 +39,20 @@ export function CaseMenu() {
           <span aria-hidden="true" className="case-menu-icon"><i /><i /><i /></span>
         </button>
         <nav id={`${uid}-menu`} className="case-menu-panel glass" aria-label="Main navigation" hidden={!open}>
-          {links.map((item) => (
-            <Link key={item.label} href={item.href} onClick={() => setOpen(false)}>
-              {item.label}{item.note && <small>{item.note}</small>}
-            </Link>
-          ))}
+          <Link href="/" onClick={close}>Tatiana Botero<small>Home</small></Link>
+
+          <button type="button" className="case-menu-work" aria-expanded={workOpen} aria-controls={`${uid}-work`} onClick={() => setWorkOpen((value) => !value)}>
+            Work<span aria-hidden="true" className="case-menu-chevron" />
+          </button>
+          <div id={`${uid}-work`} className="case-menu-sub" hidden={!workOpen}>
+            {projects.map((project) => (
+              <Link key={project.href} href={project.href} onClick={close} aria-current={pathname === project.href ? "page" : undefined}>{project.label}</Link>
+            ))}
+            <Link href="/#work" onClick={close} className="case-menu-all">View all work <span aria-hidden="true">→</span></Link>
+          </div>
+
+          <Link href="/about" onClick={close}>About</Link>
+          <Link href="/contact" onClick={close}>Contact</Link>
         </nav>
       </div>
     </header>

@@ -398,11 +398,49 @@
 .case-menu-icon i { display: block; width: 16px; height: 1.5px; border-radius: 2px; background: var(--ink); }
 .case-menu-panel { position: absolute; z-index: 60; top: calc(100% + 8px); right: 0; display: grid; min-width: 13rem; padding: var(--s-2); border-radius: var(--r-md); }
 .case-menu-panel[hidden] { display: none; }
+.case-menu-panel { max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain; min-width: min(17rem, calc(100vw - 2 * var(--gutter))); }
+.case-menu-panel a, .case-menu-work { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); width: 100%; min-height: 44px; padding: 10px 14px; border: 0; border-radius: var(--r-sm); background: none; color: var(--ink); font: inherit; font-size: 1rem; font-weight: 500; text-align: left; text-decoration: none; cursor: pointer; transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
+.case-menu-panel a small { color: var(--ink-3); font-size: 0.8125rem; font-weight: 500; }
+.case-menu-panel a:hover, .case-menu-panel a:focus-visible, .case-menu-work:hover, .case-menu-work:focus-visible { background: rgb(105 102 245 / 10%); color: var(--purple-deep); outline: none; }
+.case-menu-chevron { width: 8px; height: 8px; margin-right: 4px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform var(--t-fast) var(--ease); }
+.case-menu-work[aria-expanded="true"] .case-menu-chevron { transform: translateY(2px) rotate(-135deg); }
+.case-menu-sub { display: grid; margin: 0 0 var(--s-1) 14px; padding-left: var(--s-2); border-left: 1px solid var(--line-purple); }
+.case-menu-sub[hidden] { display: none; }
+.case-menu-sub a { min-height: 40px; padding: 8px 12px; color: var(--ink-2); font-size: 0.9375rem; }
+.case-menu-sub a[aria-current="page"] { color: var(--purple-deep); font-weight: 600; box-shadow: inset 2px 0 0 var(--purple); }
+.case-menu-sub .case-menu-all { color: var(--purple-deep); font-size: 0.875rem; }
+
+.es-dots { display: flex; justify-content: center; }
+.es-dots button { position: relative; width: 24px; height: 20px; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.es-dots button::before { content: ""; position: absolute; inset: 0; margin: auto; width: 6px; height: 6px; border-radius: 50%; background: rgb(105 102 245 / 28%); transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease); }
+.es-dots button:hover::before { background: rgb(105 102 245 / 60%); }
+.es-dots button[aria-current="step"]::before { background: var(--purple-deep); transform: scale(1.5); }
+.es-dots button:focus-visible { outline: 2px solid var(--purple); outline-offset: -2px; border-radius: 6px; }
+.es-hint { display: none; margin: 0; color: var(--ink-2); font-size: 0.8125rem; letter-spacing: 0.02em; }
+@media (max-width: 860px) {
+  .es-hint { display: block; }
+  .es-dots button { width: 28px; }
+}
+@media (max-width: 560px) {
+  /* one compact line on phones: arrow, counter, dots, arrow */
+  .es-dots button { width: 22px; height: 14px; }
+  .es-hint { grid-area: hint; text-align: center; }
+}
+
+/* ---------- Case study chrome: a quiet menu button, progress dots, and the content ---------- */
+.case-top { display: flex; justify-content: flex-end; width: min(var(--shell), 100% - 2 * var(--gutter)); margin: 0 auto; padding-top: var(--s-4); }
+.case-menu { position: relative; }
+.case-menu-button { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line-purple); border-radius: 50%; background: rgb(255 255 255 / 60%); cursor: pointer; transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease); }
+.case-menu-button:hover, .case-menu-button[aria-expanded="true"] { border-color: var(--purple); background: #fff; }
+.case-menu-button:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; }
+.case-menu-icon { display: grid; gap: 4px; }
+.case-menu-icon i { display: block; width: 16px; height: 1.5px; border-radius: 2px; background: var(--ink); }
+.case-menu-panel { position: absolute; z-index: 60; top: calc(100% + 8px); right: 0; display: grid; min-width: 13rem; padding: var(--s-2); border-radius: var(--r-md); }
+.case-menu-panel[hidden] { display: none; }
 .case-menu-panel a { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); min-height: 44px; padding: 10px 14px; border-radius: var(--r-sm); color: var(--ink); font-size: 1rem; font-weight: 500; text-decoration: none; transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
 .case-menu-panel a small { color: var(--ink-3); font-size: 0.8125rem; font-weight: 500; }
 .case-menu-panel a:hover, .case-menu-panel a:focus-visible { background: rgb(105 102 245 / 10%); color: var(--purple-deep); outline: none; }
 
-.es-nav { position: static; margin-bottom: var(--s-2); padding: var(--s-3) 0 0; background: none; border: 0; -webkit-backdrop-filter: none; backdrop-filter: none; display: flex; flex-direction: column; align-items: center; gap: 0; }
 .es-dots { display: flex; justify-content: center; }
 .es-dots button { position: relative; width: 28px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .es-dots button::before { content: ""; position: absolute; inset: 0; margin: auto; width: 7px; height: 7px; border-radius: 50%; background: rgb(105 102 245 / 28%); transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease); }
@@ -410,6 +448,36 @@
 .es-dots button[aria-current="step"]::before { background: var(--purple-deep); transform: scale(1.5); }
 .es-dots button:focus-visible { outline: 2px solid var(--purple); outline-offset: -2px; border-radius: 8px; }
 .es-count { margin: 0; color: var(--purple-deep); font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
-.es-hint { margin: 4px 0 0; color: var(--ink-2); font-size: 0.8125rem; letter-spacing: 0.02em; }
+.es-hint { margin: 0; color: var(--ink-2); font-size: 0.8125rem; letter-spacing: 0.02em; }
 .es-hint-d { display: none; }
 @media (min-width: 861px) { .es-hint-m { display: none; } .es-hint-d { display: inline; } }
+
+/* ---------- Persistent chapter dots: a small pill fixed at the bottom centre, safe-area aware ---------- */
+.es-dock { position: fixed; z-index: 45; left: 0; right: 0; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; }
+.es-dock > * { pointer-events: auto; }
+.es-dock-pill { display: flex; align-items: center; gap: var(--s-2); padding: 0 14px 0 8px; border: 1px solid var(--line-purple); border-radius: var(--r-pill); background: rgb(255 255 255 / 80%); box-shadow: 0 8px 24px -14px rgb(81 78 216 / 35%); }
+@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) { .es-dock-pill { background: rgb(255 255 255 / 62%); -webkit-backdrop-filter: blur(14px) saturate(1.5); backdrop-filter: blur(14px) saturate(1.5); } }
+.es-hint { padding: 3px 10px; border-radius: var(--r-pill); background: rgb(248 248 245 / 85%); }
+.es { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 520px) { .es-dots button { width: 24px; } }
+
+/* ---------- Typographic hierarchy for full case studies ----------
+   1 chapter title (the purple label)  2 main idea  3 supporting heading  4 body  5 labels */
+.es-panel > div > .eyebrow:first-child { margin: 0; font-size: clamp(2rem, 3.2vw + 1.1rem, 3.75rem); font-weight: 600; line-height: 1.05; letter-spacing: -0.035em; text-transform: none; }
+.es-panel > div > h2, .es-panel > div > h2.es-long, .es-panel > div > h2.tc-q { max-width: 24em; margin-top: var(--s-4); font-size: clamp(1.625rem, 1.5vw + 1.3rem, 2.5rem); font-weight: 500; line-height: 1.12; letter-spacing: -0.03em; }
+.es-statement { font-size: clamp(1.25rem, 1vw + 1rem, 1.75rem); }
+.es-sub-title, .es .es-sub-title { font-size: clamp(1.25rem, 0.8vw + 1.1rem, 1.75rem); }
+.es-big strong { font-size: clamp(2.5rem, 3vw + 1rem, 3.75rem); }
+@media (max-width: 520px) { .es-panel > div > h2, .es-panel > div > h2.es-long, .es-panel > div > h2.tc-q { font-size: clamp(1.5rem, 6.4vw, 1.875rem); } }
+
+/* Hero / overview: project name first, then the premise, then context */
+.es .es-overview > .eyebrow:first-child, .es .mm-brand .eyebrow { margin: 0; font-size: clamp(2.25rem, 4vw + 1.1rem, 4.5rem); font-weight: 600; line-height: 1.02; letter-spacing: -0.04em; text-transform: none; }
+.es .es-overview h1 { max-width: 22em; margin-top: var(--s-4); font-size: clamp(1.5rem, 2.3vw + 1rem, 2.75rem); font-weight: 500; line-height: 1.12; letter-spacing: -0.03em; }
+.es .es-overview .ec-meta { margin-top: var(--s-3) !important; font-size: clamp(0.875rem, 0.3vw + 0.8rem, 1rem); }
+.es .es-lede { font-size: clamp(1.0625rem, 0.4vw + 1rem, 1.25rem); }
+.tp-signals strong { font-size: clamp(2.25rem, 2.2vw + 1.4rem, 3.25rem); }
+/* Evidence and metrics stay below the chapter title on every screen size */
+.ec-proof strong, .es .ei-stat-nums strong, .ex-slide .ei-stat-nums strong, .es .ec-stats strong { font-size: clamp(1.625rem, 1.4vw + 1.2rem, 2.75rem); }
+.tp-signals strong { font-size: clamp(1.75rem, 2vw + 1.1rem, 3rem); }
+.es .es-overview > .eyebrow:first-child, .es .mm-brand .eyebrow { font-size: clamp(2.375rem, 3.8vw + 1.2rem, 4.5rem); }
+.es-hint { background: rgb(248 248 245 / 97%); border: 1px solid var(--line-purple); box-shadow: 0 6px 16px -10px rgb(81 78 216 / 30%); }
