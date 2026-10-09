@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Caveat, Geist } from "next/font/google";
 import { Suspense } from "react";
 import { GlowController } from "@/components/glow";
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         {children}
         <GlowController />
+        <Analytics />
         <Suspense fallback={null}>
           <RevealController />
         </Suspense>
