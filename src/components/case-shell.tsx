@@ -72,7 +72,9 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
     if (index <= 0) {
       if (window.location.hash) window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
       if (!honourHash) window.scrollTo({ top: 0, behavior: "auto" });
-      return () => window.clearTimeout(timer);
+      /* The router can keep a previously visited case study alive in the background, so reset its chapter explicitly. */
+      const reset = window.setTimeout(() => { setActive(0); setDir(null); setMoves(0); if (!honourHash) window.scrollTo({ top: 0, behavior: "auto" }); }, 60);
+      return () => { window.clearTimeout(timer); window.clearTimeout(reset); };
     }
     const open = window.setTimeout(() => setActive(index), 0);
     return () => { window.clearTimeout(timer); window.clearTimeout(open); };
@@ -148,6 +150,14 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
       el.removeEventListener("wheel", onWheel);
       window.clearTimeout(quiet);
     };
+  }, []);
+
+  /* A reload or revisit should begin at the top of the chapter, not wherever the browser last left the scroll bar. */
+  useEffect(() => {
+    if (!("scrollRestoration" in window.history)) return;
+    const before = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+    return () => { window.history.scrollRestoration = before; };
   }, []);
 
   /* A sideways trackpad gesture must not also trigger the browser's own back/forward swipe on this page. */
