@@ -229,31 +229,57 @@
   .index-panel { margin-top: var(--s-4); padding: var(--s-5) var(--s-4); }
   .index-light { inset: 0; }
 }
-/* Phones: the four previews sit side by side in a native, snapping, swipeable strip. Vertical scrolling is untouched. */
+/* Phones: the four previews sit side by side in a native strip. Exactly one panel wide each, one snap point per panel. */
 @media (max-width: 768px) {
-  .index-panels { position: relative; display: flex; align-items: flex-start; gap: var(--s-3); margin-top: var(--s-4); overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; transition: height 0.25s var(--ease); }
+  .index-tabs { position: relative; }
+  .index-panels { position: relative; display: flex; align-items: flex-start; gap: var(--s-3); width: 100%; margin-top: var(--s-4); padding: 0; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; transition: height 0.25s var(--ease); }
   .index-panels::-webkit-scrollbar { display: none; }
-  .index-panels .index-panel, .index-panels .index-panel:not([data-open]) { display: block; flex: 0 0 100%; min-width: 0; margin-top: 0; scroll-snap-align: start; animation: none; }
+  .index-panels .index-panel, .index-panels .index-panel:not([data-open]) { display: block; box-sizing: border-box; flex: 0 0 100%; width: 100%; min-width: 0; max-width: 100%; margin: 0; overflow: hidden; padding: var(--s-5) 20px; scroll-snap-align: start; scroll-snap-stop: always; animation: none; -webkit-backdrop-filter: none; backdrop-filter: none; background: rgb(255 255 255 / 78%); }
   .index-dots { display: flex; justify-content: center; gap: 2px; margin-top: var(--s-3); }
   .index-dots button { position: relative; width: 28px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .index-dots button::before { content: ""; position: absolute; inset: 0; margin: auto; width: 8px; height: 8px; border: 1.5px solid var(--purple); border-radius: 50%; transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease); }
   .index-dots button[aria-current="true"]::before { background: var(--purple-deep); border-color: var(--purple-deep); transform: scale(1.2); }
-}
-@media (prefers-reduced-motion: reduce) { .index-panels { transition: none; } }
-
-/* Phones: each preview is exactly one content width. Nothing inside may widen it, and nothing may spill into the next slide or the page. */
-@media (max-width: 768px) {
   .work { overflow-x: clip; padding-top: clamp(3rem, 10vw, 4rem); }
   .work .section-head { margin-bottom: var(--s-4); }
   .work .section-head h2 { max-width: none; margin-top: var(--s-2); font-size: clamp(1.5rem, 6.2vw, 1.875rem); line-height: 1.15; letter-spacing: -0.03em; }
-  .index { min-width: 0; max-width: 100%; }
-  .index-panels { width: 100%; max-width: 100%; box-sizing: border-box; }
-  .index-panels .index-panel, .index-panels .index-panel:not([data-open]) { box-sizing: border-box; width: 100%; max-width: 100%; overflow: hidden; padding: var(--s-5) 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .index-panels { transition: none; } }
+
+/* ---------- Case study previews: one compact type scale and density, desktop and mobile ---------- */
+.index-panel .panel-label { font-size: clamp(0.875rem, 0.2vw + 0.82rem, 1rem); }
+.index-panel h3 { max-width: 20em; margin: var(--s-2) 0 var(--s-5); font-size: clamp(1.75rem, 2vw + 1.1rem, 2.75rem); line-height: 1.1; letter-spacing: -0.035em; }
+.index-panel .sc-body { gap: var(--s-5); margin-bottom: 0; align-items: center; }
+.index-panel .sc-scene { padding: var(--s-4); }
+.index-panel .sc-story { margin: 0 0 var(--s-4); font-size: clamp(1rem, 0.3vw + 0.95rem, 1.1875rem); line-height: 1.5; }
+.index-panel .sc-context { margin: 0 0 var(--s-5); }
+.index-panel .sc-context li { font-size: clamp(0.875rem, 0.2vw + 0.82rem, 1rem); }
+.index-panel .cta-pill { font-size: 1rem; }
+.index-panel .sc-big { font-size: clamp(2.375rem, 2vw + 1.6rem, 3.5rem); }
+.index-panel .sc-pair { font-size: clamp(1.125rem, 0.6vw + 1rem, 1.375rem); }
+.index-panel .sc-also { margin-top: 2px; font-size: 0.9375rem; }
+.index-panel .sc-one { padding: 10px 16px; font-size: clamp(1rem, 0.4vw + 0.95rem, 1.1875rem); }
+.index-panel .sc-down { margin: var(--s-2) 0; }
+/* Enterprise: eight teams as a compact grid */
+.index-panel .sc-hub ul { grid-template-columns: repeat(auto-fit, minmax(5.75rem, 1fr)); gap: 6px; }
+.index-panel .sc-hub li { padding: 8px 4px; font-size: clamp(0.8125rem, 0.2vw + 0.76rem, 0.9375rem); }
+/* Stealth: four criteria in a compact 2 x 2 grid */
+.index-panel .sc-plus { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.index-panel .sc-plus li { padding: 10px 12px; font-size: clamp(1rem, 0.4vw + 0.95rem, 1.1875rem); text-align: center; }
+.index-panel .sc-plus li + li::before { display: none; }
+.index-panel .sc-criteria .sc-down { display: block; }
+/* Tempo: calendar vs reality side by side, tightly */
+.index-panel .sc-evening { gap: var(--s-3); }
+.index-panel .sc-evening-cols { grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
+.index-panel .sc-cal, .index-panel .sc-real { padding: 10px 12px; }
+.index-panel .sc-cal strong { font-size: 1rem; white-space: nowrap; }
+.index-panel .sc-real ul { font-size: 0.875rem; gap: 2px; }
+@media (max-width: 768px) {
+  .index-panel h3 { margin-bottom: var(--s-4); }
+  .index-panel .sc-body { gap: var(--s-4); }
+  .index-panel .sc-scene { padding: var(--s-3); }
+  .index-panel .sc-context { margin-bottom: var(--s-4); }
+  .index-panel .sc-big { font-size: clamp(2.375rem, 11vw, 3rem); }
   .index-panel :is(img, svg, video, canvas, table) { max-width: 100%; height: auto; }
   .index-panel .sc-body, .index-panel .sc-scene, .index-panel .sc-side { min-width: 0; max-width: 100%; }
-  .index-panel .sc-scene { padding: var(--s-4); }
   .index-panel :is(h3, p, li, span, strong) { overflow-wrap: anywhere; }
-  .index-panel h3 { margin-bottom: var(--s-5); font-size: clamp(1.375rem, 5.4vw, 1.75rem); }
-  .index-panel .sc-big { font-size: clamp(1.75rem, 8.5vw, 2.5rem); }
-  .index-dots { max-width: 100%; }
 }
