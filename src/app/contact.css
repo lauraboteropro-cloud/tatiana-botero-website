@@ -17,3 +17,6 @@
 
 .contact-main .eyebrow { font-size: clamp(2rem, 2.4vw + 1.4rem, 3rem); font-weight: 600; line-height: 1.05; letter-spacing: -0.035em; text-transform: none; }
 .contact-main h1 { margin-top: var(--s-3); font-size: clamp(1.5rem, 2vw + 1.1rem, 2.5rem); font-weight: 500; line-height: 1.15; letter-spacing: -0.03em; }
+
+.contact-label { display: inline-flex; align-items: center; gap: var(--s-3); }
+.contact-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: #fff; box-shadow: 0 0 0 1px var(--line-purple); }
