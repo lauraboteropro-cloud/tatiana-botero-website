@@ -39,6 +39,9 @@ function scrollerLeaves(scroller: HTMLElement | "form" | null, towardNext: boole
   return towardNext ? atEnd : atStart;
 }
 
+/* True until the first case study of this page load has mounted. */
+let firstDocumentLoad = true;
+
 export function CaseShell({ sections, next, className = "" }: { sections: CaseSection[]; next: { href: string; label: string }; className?: string }) {
   const [active, setActive] = useState(0);
   const [moves, setMoves] = useState(0);
@@ -59,11 +62,20 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
     return () => window.clearTimeout(timer);
   }, []);
 
+  /* Entering a case study always starts on its first chapter. A #chapter in the address is honoured only when this
+     document was loaded directly on it (a shared link or a refresh): never when arriving by in-app navigation,
+     where the hash still belongs to the page we just left. */
   useEffect(() => {
-    const index = sections.findIndex((section) => `#${section.id}` === window.location.hash);
-    if (index <= 0) return;
-    const timer = window.setTimeout(() => setActive(index), 0);
-    return () => window.clearTimeout(timer);
+    const honourHash = firstDocumentLoad;
+    const timer = window.setTimeout(() => { firstDocumentLoad = false; }, 0);
+    const index = honourHash ? sections.findIndex((section) => `#${section.id}` === window.location.hash) : -1;
+    if (index <= 0) {
+      if (window.location.hash) window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+      if (!honourHash) window.scrollTo({ top: 0, behavior: "auto" });
+      return () => window.clearTimeout(timer);
+    }
+    const open = window.setTimeout(() => setActive(index), 0);
+    return () => { window.clearTimeout(timer); window.clearTimeout(open); };
   }, [sections]);
 
   /* Every way of changing chapter goes through here. */
@@ -74,7 +86,7 @@ export function CaseShell({ sections, next, className = "" }: { sections: CaseSe
     try { sessionStorage.setItem("cs-swiped", "1"); } catch {}
     setDir(target > active ? "next" : "prev");
     setActive(target);
-    window.history.replaceState(null, "", `#${sections[target].id}`);
+    window.history.replaceState(window.history.state, "", `#${sections[target].id}`);
     setMoves((count) => count + 1);
   };
 
